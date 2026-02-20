@@ -2,11 +2,12 @@
 class AT8_News_Widget extends \Elementor\Widget_Base {
 
     public function get_name() { return 'at8_news'; }
-    public function get_title() { return 'AT8 Latest News'; }
+    public function get_title() { return 'AT8 Latest News (Dynamic)'; }
     public function get_icon() { return 'eicon-post-list'; }
     public function get_categories() { return [ 'general' ]; }
 
     protected function register_controls() {
+        // Section Header Controls - Remain Editable
         $this->start_controls_section('header_content', ['label' => 'Section Header']);
         
         $this->add_control('title_1', ['label' => 'Title Blue', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'LATEST']);
@@ -16,38 +17,13 @@ class AT8_News_Widget extends \Elementor\Widget_Base {
 
         $this->end_controls_section();
 
-        $this->start_controls_section('news_items', ['label' => 'News Articles']);
-
-        $repeater = new \Elementor\Repeater();
-
-        $repeater->add_control('n_tag', ['label' => 'Category Tag', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Framework Award']);
-        $repeater->add_control('n_title', ['label' => 'Title', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'AT-8 Secures Kent Infrastructure Partnership']);
-        $repeater->add_control('n_desc', ['label' => 'Excerpt', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => 'We are proud to announce our selection for a new 5-year framework agreement...']);
-        $repeater->add_control('n_image', ['label' => 'Image', 'type' => \Elementor\Controls_Manager::MEDIA]);
-        $repeater->add_control('n_link', ['label' => 'Read More Link', 'type' => \Elementor\Controls_Manager::URL]);
-
-        $this->add_control('news_list', [
-            'label' => 'News List',
-            'type' => \Elementor\Controls_Manager::REPEATER,
-            'fields' => $repeater->get_controls(),
-            'default' => [
-                [
-                    'n_tag' => 'Framework Award',
-                    'n_title' => 'AT-8 Secures Kent Infrastructure Partnership',
-                    'n_desc' => 'We are proud to announce our selection for a new 5-year framework agreement delivering electrical grid upgrades across Kent.'
-                ],
-                [
-                    'n_tag' => 'Investment',
-                    'n_title' => 'Investing in New Specialist Fleet',
-                    'n_desc' => "We've expanded our capabilities with a £1.5m investment in specialized cable pulling and winching equipment."
-                ],
-                [
-                    'n_tag' => 'Safety Milestone',
-                    'n_title' => '1,500 Days Without a Lost Time Incident',
-                    'n_desc' => 'Safety remains our core value. Our team reaches a significant milestone across all water and electrical worksites.'
-                ],
-            ],
-            'title_field' => '{{{ n_title }}}',
+        // Query Controls - Added to allow editing the number of posts
+        $this->start_controls_section('query_settings', ['label' => 'Query Settings']);
+        
+        $this->add_control('posts_count', [
+            'label' => 'Number of Posts',
+            'type' => \Elementor\Controls_Manager::NUMBER,
+            'default' => 3,
         ]);
 
         $this->end_controls_section();
@@ -55,43 +31,73 @@ class AT8_News_Widget extends \Elementor\Widget_Base {
 
     protected function render() {
         $settings = $this->get_settings_for_display();
+
+        // 1. Dynamic WP_Query to fetch real posts
+        $query_args = array(
+            'post_type'      => 'post',
+            'posts_per_page' => $settings['posts_count'],
+            'post_status'    => 'publish',
+            'orderby'        => 'date',
+            'order'          => 'DESC'
+        );
+
+        $news_query = new \WP_Query($query_args);
         ?>
+
         <section class="py-24 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
                 <div class="flex justify-between items-end mb-16 reveal active">
                     <div>
                         <h2 class="text-4xl font-extrabold text-at8-blue mb-4 uppercase">
-                            <?php echo $settings['title_1']; ?> <span class="text-at8-yellow"><?php echo $settings['title_2']; ?></span>
+                            <?php echo esc_html($settings['title_1']); ?> <span class="text-at8-yellow"><?php echo esc_html($settings['title_2']); ?></span>
                         </h2>
                         <div class="h-1 w-24 bg-at8-yellow"></div>
                     </div>
                     <?php if ( ! empty( $settings['view_all_link']['url'] ) ) : ?>
                         <a href="<?php echo esc_url( $settings['view_all_link']['url'] ); ?>" class="link-animate text-at8-blue font-bold transition uppercase text-xs tracking-widest">
-                            <?php echo $settings['view_all_text']; ?>
+                            <?php echo esc_html($settings['view_all_text']); ?>
                         </a>
                     <?php endif; ?>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-                    <?php foreach ($settings['news_list'] as $index => $item) : 
-                        $delay = $index * 100;
+                    <?php 
+                    if ($news_query->have_posts()) :
+                        $index = 0;
+                        while ($news_query->have_posts()) : $news_query->the_post(); 
+                            $delay = $index * 100;
+                            $thumb = get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/800x600';
+                            $categories = get_the_category();
+                            $cat_name = !empty($categories) ? $categories[0]->name : 'Industry Update';
+                            ?>
+                            
+                            <div class="reveal active group cursor-pointer" style="transition-delay: <?php echo $delay; ?>ms;">
+                                <a href="<?php the_permalink(); ?>" class="block no-underline">
+                                    <div class="overflow-hidden rounded-xl mb-6 shadow-md bg-gray-100">
+                                        <img src="<?php echo esc_url($thumb); ?>" 
+                                             class="w-full h-48 object-cover group-hover:scale-110 transition duration-500 grayscale group-hover:grayscale-0" 
+                                             alt="<?php the_title_attribute(); ?>">
+                                    </div>
+                                    <p class="text-at8-yellow text-xs font-bold mb-2 uppercase tracking-widest"><?php echo esc_html($cat_name); ?></p>
+                                    <h3 class="font-bold text-xl mb-4 group-hover:text-at8-blue transition text-gray-900"><?php the_title(); ?></h3>
+                                    <p class="text-gray-500 text-sm mb-4">
+                                        <?php echo wp_trim_words(get_the_excerpt(), 15); ?>
+                                    </p>
+                                    <span class="inline-block text-at8-blue font-bold text-xs uppercase tracking-tighter border-b-2 border-at8-yellow pb-1">
+                                        Read Article <i class="fas fa-arrow-right ml-1"></i>
+                                    </span>
+                                </a>
+                            </div>
+
+                            <?php 
+                            $index++;
+                        endwhile; 
+                        wp_reset_postdata(); 
+                    else : 
+                        echo '<p>No news articles found.</p>';
+                    endif; 
                     ?>
-                    <div class="reveal active group cursor-pointer" style="transition-delay: <?php echo $delay; ?>ms;">
-                        <div class="overflow-hidden rounded-xl mb-6 shadow-md">
-                            <img src="<?php echo esc_url($item['n_image']['url']); ?>" 
-                                 class="w-full h-48 object-cover group-hover:scale-110 transition duration-500" 
-                                 alt="<?php echo esc_attr($item['n_title']); ?>">
-                        </div>
-                        <p class="text-at8-yellow text-xs font-bold mb-2 uppercase tracking-widest"><?php echo $item['n_tag']; ?></p>
-                        <h3 class="font-bold text-xl mb-4 group-hover:text-at8-blue transition"><?php echo $item['n_title']; ?></h3>
-                        <p class="text-gray-500 text-sm"><?php echo $item['n_desc']; ?></p>
-                        
-                        <?php if ( ! empty( $item['n_link']['url'] ) ) : ?>
-                            <a href="<?php echo esc_url( $item['n_link']['url'] ); ?>" class="mt-4 inline-block text-at8-blue font-bold text-xs uppercase tracking-tighter">Read Article <i class="fas fa-arrow-right ml-1"></i></a>
-                        <?php endif; ?>
-                    </div>
-                    <?php endforeach; ?>
                 </div>
 
             </div>
