@@ -7,15 +7,54 @@
     --at8-dark: #111827;
 }
 
+/* 1. ELEMENTOR CONTAINER RESET (.e-con) */
+/* Removes unwanted default padding and margins from Elementor containers */
+.e-con {
+    --padding-inline-start: 0px !important;
+    --padding-inline-end: 0px !important;
+    --padding-top: 0px !important;
+    --padding-bottom: 0px !important;
+    padding: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
 body {
     font-family: "gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
     scroll-behavior: smooth;
+    padding-top: 80px; /* Offset for the fixed header */
 }
 
+/* --- MOBILE SPECIFIC ADJUSTMENTS --- */
+@media (max-width: 768px) {
+    body { padding-top: 70px; }
+    
+    /* Set font-weight 700 for extrabold text on mobile */
+    .font-extrabold { font-weight: 700 !important; }
 
+    /* Remove background highlight on tap for mobile menu button */
+    #mobile-menu-button {
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+    }
 
+    /* Mobile Submenu Styling */
+    .at8-mobile-nav .sub-menu {
+        display: block !important; 
+        padding-left: 1.5rem;
+        margin-top: 0.5rem;
+        list-style: none;
+        border-left: 2px solid var(--at8-yellow);
+    }
 
-
+    .at8-mobile-nav .sub-menu li a {
+        padding: 0.5rem 0;
+        font-size: 0.75rem;
+        opacity: 0.8;
+        border-bottom: none !important;
+        text-transform: none;
+    }
+}
 
 /* --- Utilities --- */
 .bg-at8-blue { background-color: var(--at8-blue); }
@@ -24,8 +63,170 @@ body {
 .text-at8-yellow { color: var(--at8-yellow); }
 .border-at8-yellow { border-color: var(--at8-yellow); }
 
+/* --- Header Navigation Styling --- */
+.at8-desktop-nav {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
 
-/* --- Hero Section --- */
+.at8-desktop-nav li {
+    margin: 0 1rem;
+    position: relative; 
+}
+
+/* Base Desktop Link Style */
+.at8-desktop-nav li a {
+    font-weight: 600;
+    color: var(--at8-blue);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-size: 0.75rem; 
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    position: relative;
+    padding: 0.5rem 0;
+    display: block;
+}
+
+.at8-desktop-nav li a:hover { color: #1e3a8a; }
+
+/* Underline Animation for Top-Level Links only */
+.at8-desktop-nav > li:not(:last-child):not(.menu-item-has-children) > a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--at8-yellow);
+    transition: width 0.3s;
+}
+
+.at8-desktop-nav > li:not(:last-child):not(.menu-item-has-children) > a:hover::after { width: 100%; }
+
+/* --- Desktop Submenu / Dropdown Styling --- */
+.at8-desktop-nav .sub-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    min-width: 220px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    border-top: 3px solid var(--at8-yellow);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    z-index: 100;
+    padding: 0.75rem 0;
+    list-style: none;
+}
+
+.at8-desktop-nav li:hover > .sub-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.at8-desktop-nav .sub-menu li { margin: 0; width: 100%; }
+
+/* Reset: Ensure Submenu Items are NOT buttons */
+.at8-desktop-nav .sub-menu li:last-child { margin-left: 0 !important; }
+.at8-desktop-nav .sub-menu li a {
+    padding: 0.75rem 1.5rem !important;
+    font-size: 0.7rem !important;
+    text-transform: uppercase !important;
+    background-color: transparent !important;
+    color: var(--at8-blue) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.at8-desktop-nav .sub-menu li a::after { display: none !important; }
+.at8-desktop-nav .sub-menu li a:hover { background: #f8fafc !important; }
+
+/* --- Top-Level Last Menu Item (Contact Button Style) --- */
+.at8-desktop-nav > li:last-child { margin-left: 2rem; }
+.at8-desktop-nav > li:last-child > a {
+    background-color: var(--at8-blue);
+    color: white !important;
+    padding: 0.6rem 1.5rem;
+    border-radius: 0.375rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.at8-desktop-nav > li:last-child > a::after {
+    content: '\f061'; /* FontAwesome Arrow Right */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-left: 0.5rem;
+    font-size: 0.7rem;
+}
+
+.at8-desktop-nav > li:last-child > a:hover {
+    background-color: var(--at8-yellow) !important;
+    color: var(--at8-dark) !important;
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 15px 30px -10px rgba(251, 191, 36, 0.5);
+}
+
+/* --- Mobile Menu Base --- */
+.at8-mobile-nav { list-style: none; padding: 0; margin: 0; }
+.at8-mobile-nav li a {
+    display: block;
+    padding: 1rem 0;
+    color: white;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.at8-mobile-nav li:last-child a { color: var(--at8-yellow); font-weight: 800; border: none; }
+
+/* --- Footer Link Styling (Yellow Border Hover) --- */
+.at8-footer-menu, .at8-legal-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.at8-footer-menu li a, 
+.at8-legal-nav li a {
+    color: inherit !important;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.3s ease;
+    display: inline-block;
+    padding-bottom: 2px;
+}
+
+.at8-footer-menu li a:hover, 
+.at8-footer-menu li a:active,
+.at8-legal-nav li a:hover, 
+.at8-legal-nav li a:active {
+    color: inherit !important;
+    border-bottom-color: var(--at8-yellow) !important;
+}
+
+/* Ensure legal nav wraps and centers correctly on small screens */
+.at8-legal-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.at8-legal-nav li {
+    margin: 5px 10px;
+}
+
+/* --- Hero Section & Brand Animations --- */
 .hero-bg {
     background-size: cover;
     background-position: center;
@@ -45,35 +246,6 @@ body {
     background-clip: text;
     animation: brandGradient 4s ease infinite;
     display: inline-block;
-}
-
-/* --- Buttons --- */
-.btn-animate {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    z-index: 1;
-}
-
-.btn-blue-to-yellow:hover {
-    background-color: var(--at8-yellow) !important;
-    color: var(--at8-dark) !important;
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 15px 30px -10px rgba(251, 191, 36, 0.5);
-}
-
-.btn-yellow-to-blue:hover {
-    background-color: var(--at8-blue) !important;
-    color: white !important;
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 15px 30px -10px rgba(30, 58, 138, 0.5);
-}
-
-.btn-ghost-to-yellow:hover {
-    background-color: var(--at8-yellow) !important;
-    color: var(--at8-dark) !important;
-    border-color: var(--at8-yellow) !important;
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 15px 30px -10px rgba(251, 191, 36, 0.5);
 }
 
 /* --- Stats Section (The Skew Logic) --- */
@@ -119,11 +291,6 @@ body {
     letter-spacing: -0.02em;
 }
 
-.stat-info-box {
-    display: flex;
-    align-items: center;
-}
-
 .stat-accent-bar {
     width: 4px;
     height: 48px;
@@ -141,12 +308,67 @@ body {
     max-width: 180px;
     color: rgba(255, 255, 255, 0.9);
 }
-
-@media (max-width: 1024px) {
-    .stats-segment-container { flex-direction: column; }
-    .stat-segment::before { transform: none; left: 0; width: 100%; }
-    .stat-segment { padding: 3rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+/* --- SECTORS SLIDER STYLING --- */
+.sectors-slider-container {
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    display: flex;
+    overflow-x: auto;
+    padding: 1rem 0 2rem 0;
+    snap-type: x mandatory;
+    gap: 20px;
 }
+.sectors-slider-container::-webkit-scrollbar { display: none; }
+.sector-card { flex: 0 0 100%; snap-align: center; }
+@media (min-width: 768px) { .sector-card { flex: 0 0 48%; } }
+@media (min-width: 1024px) { .sector-card { flex: 0 0 31.333%; } }
+
+.sector-accent-energy { border-top: 6px solid #f59e0b; }
+.sector-accent-water { border-top: 6px solid #0ea5e9; }
+.sector-accent-telecoms { border-top: 6px solid #8b5cf6; }
+.sector-accent-civils { border-top: 6px solid #10b981; }
+
+.sector-icon-bg-energy { background-color: #fff7ed; color: #f59e0b; }
+.sector-icon-bg-water { background-color: #f0f9ff; color: #0ea5e9; }
+.sector-icon-bg-telecoms { background-color: #f5f3ff; color: #8b5cf6; }
+.sector-icon-bg-civils { background-color: #f0fdf4; color: #10b981; }
+
+@media (min-width: 768px) { .sector-card { flex: 0 0 calc(50% - 12px); } }
+@media (min-width: 1024px) { .sector-card { flex: 0 0 calc(33.333% - 16px); } }
+
+.sector-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+}
+
+/* Sector Color Logic */
+.sector-accent-energy { border-top: 6px solid #fbbf24; } /* Yellow */
+.sector-accent-water { border-top: 6px solid #0ea5e9; } /* Water Blue */
+.sector-accent-telecoms { border-top: 6px solid #8b5cf6; } /* Purple */
+.sector-accent-civils { border-top: 6px solid #10b981; } /* Green */
+
+.sector-icon-box {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.icon-bg-energy { background: #fffbeb; color: #fbbf24; }
+.icon-bg-water { background: #f0f9ff; color: #0ea5e9; }
+.icon-bg-telecoms { background: #f5f3ff; color: #8b5cf6; }
+.icon-bg-civils { background: #f0fdf4; color: #10b981; }
+@media (min-width: 1024px) { .sector-card { flex: 0 0 31.333%; } }
+
+.sector-accent-energy { border-top: 6px solid #f59e0b; }
+.sector-accent-water { border-top: 6px solid #0ea5e9; }
+.sector-accent-telecoms { border-top: 6px solid #8b5cf6; }
+.sector-accent-civils { border-top: 6px solid #10b981; }
 
 /* --- Accreditations --- */
 .accred-badge {
@@ -177,18 +399,14 @@ body {
 .accred-badge:hover::after { height: 100%; }
 .accred-badge:hover { transform: translateY(-12px); box-shadow: 0 25px 30px -10px rgba(0, 0, 0, 0.1); }
 
-.accred-logo-box {
-    height: 70px; width: 70px;
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 1.5rem; border-radius: 1rem;
-    background: #f8fafc; transition: all 0.4s ease;
-}
+.accred-chas { color: #dc2626 !important; border-bottom-color: #dc2626 !important; }
+.accred-achilles { color: #2563eb !important; border-bottom-color: #2563eb !important; }
+.accred-cline { color: #0891b2 !important; border-bottom-color: #0891b2 !important; }
+.accred-iso9 { color: #059669 !important; border-bottom-color: #059669 !important; }
+.accred-iso14 { color: #d97706 !important; border-bottom-color: #d97706 !important; }
+.accred-safe { color: #7c3aed !important; border-bottom-color: #7c3aed !important; }
 
-.accred-badge:hover .accred-logo-box { transform: scale(1.1) rotate(5deg); background: white; }
-
-.accred-label { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; }
-
-/* --- Reveal Logic --- */
+/* --- Reveal & Zoom Logic --- */
 .reveal {
     opacity: 0;
     transform: translateY(30px);
@@ -199,161 +417,6 @@ body {
     transform: translateY(0);
 }
 
-/* --- SECTORS SLIDER STYLING --- */
-.sectors-slider-container {
-    scroll-behavior: smooth;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    display: flex;
-    overflow-x: auto;
-    padding: 1rem 0 2rem 0;
-    snap-type: x mandatory;
-    gap: 20px;
-}
-.sectors-slider-container::-webkit-scrollbar { display: none; }
-.sector-card { flex: 0 0 100%; snap-align: center; }
-@media (min-width: 768px) { .sector-card { flex: 0 0 48%; } }
-@media (min-width: 1024px) { .sector-card { flex: 0 0 31.333%; } }
-
-.sector-accent-energy { border-top: 6px solid #f59e0b; }
-.sector-accent-water { border-top: 6px solid #0ea5e9; }
-.sector-accent-telecoms { border-top: 6px solid #8b5cf6; }
-.sector-accent-civils { border-top: 6px solid #10b981; }
-
-.sector-icon-bg-energy { background-color: #fff7ed; color: #f59e0b; }
-.sector-icon-bg-water { background-color: #f0f9ff; color: #0ea5e9; }
-.sector-icon-bg-telecoms { background-color: #f5f3ff; color: #8b5cf6; }
-.sector-icon-bg-civils { background-color: #f0fdf4; color: #10b981; }
-
-
-/* --- ACCREDITATION CARDS --- */
-.accred-badge {
-    background: white;
-    padding: 2.5rem 1.5rem;
-    border-radius: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    border-bottom: 4px solid #f1f5f9;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-    position: relative;
-    overflow: hidden;
-}
-
-.accred-badge::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 0%;
-    background: currentColor;
-    opacity: 0.05;
-    transition: height 0.3s ease;
-    z-index: 0;
-}
-
-.accred-badge:hover::after { height: 100%; }
-
-.accred-badge:hover {
-    transform: translateY(-12px);
-    box-shadow: 0 25px 30px -10px rgba(0, 0, 0, 0.1);
-}
-
-.accred-logo-box {
-    height: 70px;
-    width: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1.5rem;
-    border-radius: 1rem;
-    background: #f8fafc;
-    transition: all 0.4s ease;
-    position: relative;
-    z-index: 1;
-}
-
-.accred-badge:hover .accred-logo-box {
-    transform: scale(1.1) rotate(5deg);
-    background: white;
-}
-
-.accred-label {
-    position: relative;
-    z-index: 1;
-    font-size: 11px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    line-height: 1.4;
-    color: #111; /* Dark text for readability */
-}
-
-/* Color Overrides for exact matching */
-.accred-chas { color: #dc2626 !important; border-bottom-color: #dc2626 !important; }
-.accred-achilles { color: #2563eb !important; border-bottom-color: #2563eb !important; }
-.accred-cline { color: #0891b2 !important; border-bottom-color: #0891b2 !important; }
-.accred-iso9 { color: #059669 !important; border-bottom-color: #059669 !important; }
-.accred-iso14 { color: #d97706 !important; border-bottom-color: #d97706 !important; }
-.accred-safe { color: #7c3aed !important; border-bottom-color: #7c3aed !important; }
-
-/* --- Redesigned Infrastructure Section --- */
-.infra-feature-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 12px;
-    border-left: 4px solid var(--at8-yellow);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-.infra-feature-card:hover {
-    transform: translateX(10px);
-    background: #f8fafc;
-}
-.infra-image-container {
-    position: relative;
-}
-.infra-image-container::after {
-    content: '';
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    bottom: -20px;
-    left: -20px;
-    border: 2px solid var(--at8-yellow);
-    z-index: -1;
-    border-radius: 8px;
-}
-
-/* --- Projects Zoom & Link Animations --- */
-.zoom-hover {
-    overflow: hidden;
-}
-.zoom-hover img {
-    transition: transform 0.5s ease;
-}
-.zoom-hover:hover img {
-    transform: scale(1.1);
-}
-
-.link-animate {
-    display: inline-flex;
-    align-items: center;
-    transition: all 0.3s ease;
-}
-.link-animate:hover {
-    color: var(--at8-yellow) !important;
-    transform: translateX(5px);
-}
-
-/* News Image Zoom */
-.group:hover img {
-    transform: scale(1.1);
-}
-.group img {
-    transition: transform 0.5s ease;
-}
+.zoom-hover { overflow: hidden; }
+.zoom-hover img { transition: transform 0.5s ease; }
+.zoom-hover:hover img { transform: scale(1.1); }
